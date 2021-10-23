@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eou
+source $HOME/.profile
 
 cd "$(dirname "$0")"
 
@@ -23,6 +24,6 @@ MY_IP=$(curl -s -4 ifconfig.co)
 if [ "$CURRENT_IP" == "$MY_IP" ]; then
     echo "IP up-to-date: $MY_IP. Doing nothing."
 else
-    docker run -it --env-file $SECRET_FILE --rm $TAG:$VERSION
+    docker run --env-file $SECRET_FILE --rm $TAG:$VERSION
 fi
 
