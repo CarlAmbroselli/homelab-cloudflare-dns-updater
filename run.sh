@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eou
+
 cd "$(dirname "$0")"
 
 VERSION=$(git rev-list --count main)
