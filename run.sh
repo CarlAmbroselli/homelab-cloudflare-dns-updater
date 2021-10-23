@@ -4,6 +4,12 @@ set -eou
 
 cd "$(dirname "$0")"
 
+SECRET_FILE=./secrets.env
+if [ ! -f "$SECRET_FILE" ]; then
+    echo "Error. Please initialize $SECRET_FILE first using the template."
+    exit 1
+fi
+
 VERSION=$(git rev-list --count main)
 TAG=$(basename $(pwd))
 
@@ -17,6 +23,6 @@ MY_IP=$(curl -s -4 ifconfig.co)
 if [ "$CURRENT_IP" == "$MY_IP" ]; then
     echo "IP up-to-date: $MY_IP. Doing nothing."
 else
-    docker run -it --env-file ./secrets.env --rm $TAG:$VERSION
+    docker run -it --env-file $SECRET_FILE --rm $TAG:$VERSION
 fi
 
