@@ -41,7 +41,8 @@ function updateDns(newIp) {
 async function main() {
     checkEnvironmentVariables()
     let newIp = await getCurrentIp()
-    updateDns(newIp)
+    await updateDns(newIp)
+    console.log(`${process.env.CLOUDFLARE_DNS_RECORD} updated to point to ${newIp}`)
 }
 
 main()
