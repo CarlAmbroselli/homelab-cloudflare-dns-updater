@@ -18,7 +18,7 @@ if [[ "$(docker images -q $TAG:$VERSION 2> /dev/null)" == "" ]]; then
   docker build -t $TAG:$VERSION .
 fi
 
-CURRENT_IP=$(dig mothership.pinivo.com +short A)
+CURRENT_IP=$(dig mothership.pinivo.com +short A @8.8.8.8)
 MY_IP=$(curl -s -4 ifconfig.co)
 
 if [ "$CURRENT_IP" == "$MY_IP" ]; then
