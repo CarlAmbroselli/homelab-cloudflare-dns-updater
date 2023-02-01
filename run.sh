@@ -4,6 +4,7 @@ set -eou
 source $HOME/.profile
 
 cd "$(dirname "$0")"
+source ./secrets.env
 
 SECRET_FILE=./secrets.env
 if [ ! -f "$SECRET_FILE" ]; then
