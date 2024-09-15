@@ -17,4 +17,4 @@ COPY helpers/health-checks.js ./helpers/
 ENV NODE_ENV=production
 
 EXPOSE 3000
-CMD ["node", "app.js"]
+CMD node app.js
