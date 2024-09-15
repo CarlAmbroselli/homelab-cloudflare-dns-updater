@@ -1,2 +1,3 @@
 secrets.env
 node_modules
+health-status/last_run.json
