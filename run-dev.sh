@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eou pipefail
-
 cd "$(dirname "$0")"
 source ./secrets.env
 
@@ -11,8 +9,8 @@ if [ ! -f "$SECRET_FILE" ]; then
     exit 1
 fi
 
-VERSION=latest # $(git rev-list --count main)
-TAG=$(basename $(pwd))
+# TAG=$(basename $(pwd))
+# docker build -t $TAG:latest .
+# docker run -p 3000:3000 --env-file $SECRET_FILE --rm $TAG:$VERSION
 
-docker build -t $TAG:$VERSION .
-docker run -p 3000:3000 --env-file $SECRET_FILE --rm $TAG:$VERSION
+node --env-file=secrets.env app.js
