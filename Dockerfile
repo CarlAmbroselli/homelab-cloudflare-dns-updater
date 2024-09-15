@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Copy source files
-COPY server.js .
+COPY app.js .
 COPY helpers/dns.js ./helpers/
 COPY helpers/health-checks.js ./helpers/
 
