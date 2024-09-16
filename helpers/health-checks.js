@@ -1,15 +1,5 @@
 const fs = require("fs").promises;
-const { getCurrentIp, getDnsIp } = require("./dns");
-
-async function readLastRunJson() {
-  try {
-    const data = await fs.readFile("./last_run.json", "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading last_run.json:", error);
-    return null;
-  }
-}
+const { getCurrentIp, getDnsIp, lastRunTimestamp } = require("./dns");
 
 function isTimestampRecent(timestamp) {
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
@@ -22,7 +12,7 @@ async function generateHealthCheckResponse() {
   const dnsIp = await getDnsIp();
 
   return {
-    lastDnsUpdateTimestamp: lastRun ? lastRun.timestamp : null,
+    lastDnsUpdateTimestamp: lastRunTimestamp ? lastRunTimestamp : null,
     lastDnsCheckTimestamp: new Date().toISOString(),
     isLastCheckRecent: lastRun ? isTimestampRecent(lastRun.timestamp) : false,
     isCurrentIpEqualToDnsIp: currentIp === dnsIp,

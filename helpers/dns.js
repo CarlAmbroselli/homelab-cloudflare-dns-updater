@@ -1,6 +1,8 @@
 const axios = require("axios").default;
 const { exec } = require("child_process");
 
+let lastRunTimestamp;
+
 function checkEnvironmentVariables() {
   const requiredEnvVars = [
     "CLOUDFLARE_EMAIL",
@@ -69,6 +71,8 @@ async function performDnsCheck() {
       );
     }
 
+    lastRunTimestamp = new Date().toISOString();
+
     return {
       timestamp: new Date().toISOString(),
       errors: updateResult.errors,
@@ -95,4 +99,5 @@ module.exports = {
   getCurrentIp,
   getDnsIp,
   performDnsCheck,
+  lastRunTimestamp,
 };
