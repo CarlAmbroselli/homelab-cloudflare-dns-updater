@@ -1,7 +1,7 @@
 const axios = require("axios").default;
 const { exec } = require("child_process");
 
-let lastRunTimestamp;
+let lastRun = {};
 
 function checkEnvironmentVariables() {
   const requiredEnvVars = [
@@ -71,7 +71,7 @@ async function performDnsCheck() {
       );
     }
 
-    lastRunTimestamp = new Date().toISOString();
+    lastRun.timestamp = new Date().toISOString();
 
     return {
       timestamp: new Date().toISOString(),
@@ -99,5 +99,5 @@ module.exports = {
   getCurrentIp,
   getDnsIp,
   performDnsCheck,
-  lastRunTimestamp,
+  lastRun,
 };

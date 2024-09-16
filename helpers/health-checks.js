@@ -1,20 +1,18 @@
-const fs = require("fs").promises;
-const { getCurrentIp, getDnsIp, lastRunTimestamp } = require("./dns");
+const { getCurrentIp, getDnsIp } = require("./dns");
 
 function isTimestampRecent(timestamp) {
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
   return new Date(timestamp) > fiveMinutesAgo;
 }
 
-async function generateHealthCheckResponse() {
+async function generateHealthCheckResponse(lastRun = {}) {
   const currentIp = await getCurrentIp();
   const dnsIp = await getDnsIp();
 
   return {
-    lastDnsUpdateTimestamp: lastRunTimestamp ? lastRunTimestamp : null,
-    lastDnsCheckTimestamp: new Date().toISOString(),
-    isLastCheckRecent: lastRunTimestamp
-      ? isTimestampRecent(lastRunTimestamp)
+    lastDnsCheckTimestamp: lastRun.timestamp,
+    isLastCheckRecent: lastRun.timestamp
+      ? isTimestampRecent(lastRun.timestamp)
       : false,
     isCurrentIpEqualToDnsIp: currentIp === dnsIp,
     currentIp,

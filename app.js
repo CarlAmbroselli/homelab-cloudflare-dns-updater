@@ -1,5 +1,9 @@
 const http = require("http");
-const { checkEnvironmentVariables, performDnsCheck } = require("./helpers/dns");
+const {
+  checkEnvironmentVariables,
+  performDnsCheck,
+  lastRun,
+} = require("./helpers/dns");
 const { generateHealthCheckResponse } = require("./helpers/health-checks");
 
 const PORT = process.env.PORT || 3000;
@@ -13,7 +17,7 @@ setInterval(performDnsCheck, 60000);
 // Create server
 const server = http.createServer(async (req, res) => {
   if (req.url === "/") {
-    const healthCheckResponse = await generateHealthCheckResponse();
+    const healthCheckResponse = await generateHealthCheckResponse(lastRun);
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(healthCheckResponse, null, 2));
   } else {
