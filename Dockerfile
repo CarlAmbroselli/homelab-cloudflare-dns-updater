@@ -12,6 +12,7 @@ RUN npm ci --only=production
 COPY app.js .
 COPY helpers/dns.js ./helpers/
 COPY helpers/health-checks.js ./helpers/
+COPY helpers/metrics.js ./helpers/
 
 # Make the container have knowledge of environment variables
 ENV NODE_ENV=production
