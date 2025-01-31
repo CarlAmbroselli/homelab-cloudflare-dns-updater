@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Check environment variables
 checkEnvironmentVariables();
 
-// Schedule DNS check every 100 seconds
+// Schedule DNS check every minute
 setInterval(async () => {
   const result = await performDnsCheck();
   if (result.updated) {
@@ -21,7 +21,7 @@ setInterval(async () => {
   if (!result.success) {
     metrics.dnsErrors.inc();
   }
-}, 100000);
+}, 60000);
 
 // Create server
 const server = http.createServer(async (req, res) => {
