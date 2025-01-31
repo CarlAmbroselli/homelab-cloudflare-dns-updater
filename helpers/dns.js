@@ -59,7 +59,9 @@ async function updateDns(newIp) {
 async function performDnsCheck() {
   try {
     const newIp = await getCurrentIp();
+    console.log("Current IP:", newIp);
     const dnsIp = await getDnsIp();
+    console.log("DNS IP:", dnsIp);
     let updated = false;
     let updateResult = { success: true, errors: [], messages: [] };
 
