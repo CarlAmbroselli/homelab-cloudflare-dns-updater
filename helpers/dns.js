@@ -23,7 +23,7 @@ function checkEnvironmentVariables() {
 async function getCurrentIp() {
   try {
     const response = await axios.get("https://ifconfig.co/ip", {
-      timeout: 10000, // 10-second timeout
+      timeout: 100000, // 100-second timeout
       validateStatus: function (status) {
         return status >= 200 && status < 300; // Reject only if the status code is not in 2xx range
       }
