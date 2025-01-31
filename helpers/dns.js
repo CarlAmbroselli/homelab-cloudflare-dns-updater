@@ -21,8 +21,45 @@ function checkEnvironmentVariables() {
 }
 
 async function getCurrentIp() {
-  let response = await axios.get("https://ifconfig.co/ip");
-  return response.data.trim();
+  try {
+    const response = await axios.get("https://ifconfig.co/ip", {
+      timeout: 10000, // 10-second timeout
+      validateStatus: function (status) {
+        return status >= 200 && status < 300; // Reject only if the status code is not in 2xx range
+      }
+    });
+
+    if (!response.data) {
+      throw new Error("No IP data received");
+    }
+
+    const ip = response.data.trim();
+
+    // Validate IP address format
+    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (!ipRegex.test(ip)) {
+      throw new Error(`Invalid IP format: ${ip}`);
+    }
+
+    console.log("IP retrieval successful:", ip);
+    return ip;
+  } catch (error) {
+    console.error("Error retrieving current IP:", {
+      message: error.message,
+      code: error.code,
+      status: error.response ? error.response.status : 'N/A',
+      responseData: error.response ? error.response.data : 'N/A'
+    });
+
+    // Provide a more informative error
+    if (error.code === 'ENOTFOUND') {
+      throw new Error("Unable to resolve IP service hostname. Check internet connection.");
+    } else if (error.code === 'ETIMEDOUT') {
+      throw new Error("IP retrieval timed out. Check network connectivity.");
+    } else {
+      throw error; // Re-throw other errors
+    }
+  }
 }
 
 async function getDnsIp() {
@@ -60,17 +97,31 @@ async function performDnsCheck() {
   try {
     const newIp = await getCurrentIp();
     console.log("Current IP:", newIp);
-    const dnsIp = await getDnsIp();
-    console.log("DNS IP:", dnsIp);
+    
+    let dnsIp;
+    try {
+      dnsIp = await getDnsIp();
+      console.log("DNS IP:", dnsIp);
+    } catch (dnsError) {
+      console.error("DNS resolution error:", dnsError);
+      throw dnsError; // Re-throw to be caught by outer catch
+    }
+
     let updated = false;
     let updateResult = { success: true, errors: [], messages: [] };
 
     if (newIp !== dnsIp) {
-      updateResult = (await updateDns(newIp)).data;
-      updated = true;
-      console.log(
-        `${process.env.CLOUDFLARE_DNS_RECORD} updated to point to ${newIp}`,
-      );
+      try {
+        updateResult = (await updateDns(newIp)).data;
+        updated = true;
+        console.log(
+          `${process.env.CLOUDFLARE_DNS_RECORD} updated to point to ${newIp}`,
+        );
+      } catch (updateError) {
+        console.error("Update DNS error:", updateError);
+        updateResult.success = false;
+        updateResult.errors = [updateError.message];
+      }
     }
 
     lastRun.timestamp = new Date().toISOString();
@@ -84,10 +135,10 @@ async function performDnsCheck() {
       updated,
     };
   } catch (error) {
-    console.error("An error occurred:", error.message);
+    console.error("Full error details:", error); // Log full error
     return {
       timestamp: new Date().toISOString(),
-      errors: [error.message],
+      errors: [error.message || 'Unknown error'],
       messages: [],
       success: false,
       ip: null,
